@@ -1,7 +1,5 @@
 #[derive(PartialEq, Debug)]
 // Declare Car struct to describe vehicle with four named fields
-// TO DO: Replace the "mileage" field from the previous exercise with an "age" field
-// TO DO" The "age" field should hold tuple value of two fields: String, u32
 struct Car {
     color: String,
     motor: Transmission,
@@ -27,8 +25,7 @@ fn car_factory(color: String, motor: Transmission, roof: bool, miles: u32) -> Ca
 
     // Create a new "Car" instance as requested
     // - Bind first three fields to values of input arguments
-    // TO DO: Replace the "mileage" field from the previous exercise with an "age" field
-    // TO DO" The "age" field calls the "car_quality" function with the "miles" input argument 
+
     let car = Car {
         color: color,
         motor: motor,
@@ -41,6 +38,12 @@ fn car_factory(color: String, motor: Transmission, roof: bool, miles: u32) -> Ca
 }
 
 fn main() {
+    use std::collections::HashMap;
+
+    let mut orders: HashMap<String, u32> = HashMap::new();
+    let (mut new_cars, mut used_cars) = (1, 1);
+    let (mut manual, mut auto) = (1, 1);
+
     let colors = ["Blue", "Green", "Red", "Silver"];
 
     let (mut index, mut order) = (1, 1);
@@ -51,16 +54,45 @@ fn main() {
     let mut engine: Transmission;
 
     while order < 12 {
-        engine = Transmission::Manual;
 
-        if index % 2 != 0 {
-            car = car_factory(colors[index - 1].to_string(), engine, roof, miles);
+        if order % 3 == 0 {
+            engine = Transmission::Automatic;
+
+            orders.insert("Automatic".to_string(), auto);
+            auto = auto + 1;
+
+            roof = !roof;
+        } else if order % 2 == 0 {
+            engine = Transmission::SemiAuto;
         } else {
-            car = car_factory(colors[index - 1].to_string(), engine, roof, 0);
+            engine = Transmission::Manual;
+
+            orders.insert("Manual".to_string(), auto);
+            manual = manual + 1;
         }
 
-        println!("{}: {}, Closed roof, {:?}, {}, {} miles", order, car.age.0, car.motor, car.color, car.age.1);
+        if index % 2 != 0 {
+            car = car_factory(colors[index-1].to_string(), engine, roof, miles);
+            // ADD <K, V> pair to hash map
+            orders.insert("Used".to_string(), used_cars);
+            used_cars = used_cars + 1;
+        } else { 
+            car = car_factory(colors[index-1].to_string(), engine, roof, 0);
+            // ADD <K, V> pair to hash map
+            orders.insert("New".to_string(), new_cars);
+            new_cars = new_cars + 1;
+        }
 
+        // Display car order details by roof type and age of car
+        if car.roof && car.age.1 > 0 {
+            println!("{}: {}, {:?}, Closed roof, {}, {} miles", order, car.age.0, car.motor, car.color, car.age.1); 
+        } else if car.roof {
+            println!("{}: {}, {:?}, Closed roof, {}", order, car.age.0, car.motor, car.color); 
+        } else if car.age.1 > 0 {
+            println!("{}: {}, {:?}, Convertible, {}, {} miles", order, car.age.0, car.motor, car.color, car.age.1); 
+        } else {
+            println!("{}: {}, {:?}, Convertible, {}", order, car.age.0, car.motor, car.color); 
+        }
 
         order += 1;
         miles += 1000;
@@ -71,4 +103,5 @@ fn main() {
             index = 1;
         }
     }
+    println!("\nCar orders: {:?}", orders);
 }
