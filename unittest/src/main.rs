@@ -21,7 +21,7 @@ fn add_fails() {
 
 #[test]
 #[ignore = "not yet reviewed"]
-fn jadd_negatives() {
+fn add_negatives() {
     assert_eq!(add(-2, -2), -4)
 }
 
